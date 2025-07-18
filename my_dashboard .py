@@ -343,7 +343,3 @@ if region_filter != "All":
     filtered_df = filtered_df[filtered_df['Region'] == region_filter]
 if school_type_filter != "All":
     filtered_df = filtered_df[filtered_df['School Type'] == school_type_filter]
-
-st.sidebar.metric("Filtered Sales", f"£{filtered_df['Item Total'].sum():,.2f}")
-csv = filtered_df.to_csv(index=False).encode('utf-8')
-st.sidebar.download_button("⬇️ Download Filtered Data", csv, "filtered_education_sales.csv", "text/csv")
