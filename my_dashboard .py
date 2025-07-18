@@ -56,7 +56,7 @@ To develop a data-driven strategy for expanding refurbished tech sales in the ed
 # --------------------------
 @st.cache_data
 def load_data():
-    file_url = "https://dmail-my.sharepoint.com/:x:/g/personal/2619506_dundee_ac_uk/EVXCRx9d2fJDsk7QB5XzUUsBhDsV7DsQyxa3FuK6jy9zBg?download=1"
+    file_url = "https://dmail-my.sharepoint.com/:x:/g/personal/2619506_dundee_ac_uk/EVXCRx9d2fJDsk7QB5XzUUsBEDBZFjl_MPFY082rXRbR4w?download=1"
     response = requests.get(file_url)
     bytes_io = io.BytesIO(response.content)
     sales_df = pd.read_excel(bytes_io, sheet_name="Sales")
