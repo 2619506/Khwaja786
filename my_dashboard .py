@@ -59,14 +59,20 @@ def load_data():
     file_url = "https://dmail-my.sharepoint.com/:x:/g/personal/2619506_dundee_ac_uk/ETLrFWlAs81NpHPN3_nhayEBVPVFauwk8jQCcwEt-cuv4Q?download=1"
     response = requests.get(file_url)
     bytes_io = io.BytesIO(response.content)
+    
     sales_df = pd.read_excel(bytes_io, sheet_name="Sales")
     schools_df = pd.read_excel(bytes_io, sheet_name="Schools")
-    trusts_df = pd.read_excel(bytes_io, sheet_name="Trusts")  # Added Trusts sheet
-    # Strip all column names of leading/trailing whitespace
+    trusts_df = pd.read_excel(bytes_io, sheet_name="Trusts")
+    
     sales_df.columns = sales_df.columns.str.strip()
     schools_df.columns = schools_df.columns.str.strip()
     trusts_df.columns = trusts_df.columns.str.strip()
+    
     sales_df['Order Date'] = pd.to_datetime(sales_df['Order Date'], errors='coerce', dayfirst=True)
+    
+    st.write("Trusts sheet loaded with columns:", trusts_df.columns.tolist())
+    st.write("Trusts sheet row count:", len(trusts_df))
+    
     return sales_df, schools_df, trusts_df
 
 # --------------------------
