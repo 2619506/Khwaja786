@@ -52,7 +52,7 @@ To develop a data-driven strategy for expanding refurbished tech sales in the ed
 """)
 
 # --------------------------
-# Load and Clean Data from SharePoint
+# Load and Clean Data from SharePoint (Add Trusts sheet)
 # --------------------------
 @st.cache_data
 def load_data():
@@ -61,11 +61,12 @@ def load_data():
     bytes_io = io.BytesIO(response.content)
     sales_df = pd.read_excel(bytes_io, sheet_name="Sales")
     schools_df = pd.read_excel(bytes_io, sheet_name="Schools")
+    trusts_df = pd.read_excel(bytes_io, sheet_name="Trusts")  # <-- Added
     sales_df.columns = sales_df.columns.str.strip()
     sales_df['Order Date'] = pd.to_datetime(sales_df['Order Date'], errors='coerce', dayfirst=True)
-    return sales_df, schools_df
+    return sales_df, schools_df, trusts_df
 
-sales_df, schools_df = load_data()
+sales_df, schools_df, trusts_df = load_data()
 edu_df = sales_df[sales_df['School Match'].str.lower() != "no match"]
 
 # --------------------------
@@ -76,8 +77,8 @@ st.markdown("### 🔎 Trusts and Sales Overview")
 # Total trusts from Trusts sheet
 total_trusts = len(trusts_df)
 
-# Number of purchases by trusts (where 'Trust Match' == 'Trust')
-trust_purchases = sales_df[sales_df['Trust Match'].astype(str).str.strip().str.lower() == 'trust']
+# Number of purchases by trusts (where 'Trust match' == 'Trust')
+trust_purchases = sales_df[sales_df['Trust match'].str.strip().str.lower() == 'trust']
 num_trust_purchases = len(trust_purchases)
 
 # Assuming a buyer column exists in sales_df. Replace 'Buyer Name' if different.
