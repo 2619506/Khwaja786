@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import requests
 import io
 import seaborn as sns
+from datetime import datetime, timedelta
 
 # --------------------------
 # Responsive CSS for better display on all devices
@@ -84,6 +85,48 @@ col2.metric("🎓 Education Revenue", f"£{edu_revenue:,.2f}")
 col3.metric("📦 Units Sold", f"{int(total_units):,}")
 col4.metric("🏫 Schools Reached", f"{schools_reached}")
 col5.metric("⚖️ Repeat Orders %", f"{repeat_order_rate:.1f}%")
+
+# --------------------------
+# Trusts Purchased in Last 12 Months - New Section
+# --------------------------
+one_year_ago = datetime.now() - timedelta(days=365)
+
+# Filter education sales last 12 months with valid Trust match
+trust_sales_last_year = edu_df[
+    (edu_df['Order Date'] >= one_year_ago) &
+    (edu_df['Trust match'].astype(str).str.strip() != '')
+]
+
+# KPIs for Trusts
+unique_trusts_last_year = trust_sales_last_year['Trust match'].nunique()
+trust_revenue_last_year = trust_sales_last_year['Item Total'].sum()
+repeat_trust_orders = trust_sales_last_year.groupby('Trust match')['Order ID'].nunique()
+repeat_trust_rate = (
+    (repeat_trust_orders[repeat_trust_orders > 1].count() / unique_trusts_last_year) * 100
+    if unique_trusts_last_year > 0 else 0
+)
+
+trust_col1, trust_col2, trust_col3 = st.columns(3)
+trust_col1.metric("🏢 Trusts Purchased (Last 12 Months)", f"{unique_trusts_last_year}")
+trust_col2.metric("💰 Trust Revenue (Last 12 Months)", f"£{trust_revenue_last_year:,.2f}")
+trust_col3.metric("🔁 Repeat Trust Purchase Rate", f"{repeat_trust_rate:.1f}%")
+
+# Monthly Trust Revenue Trend
+monthly_trust_revenue = (
+    trust_sales_last_year
+    .resample('MS', on='Order Date')['Item Total']
+    .sum()
+)
+
+fig_trust, ax_trust = plt.subplots(figsize=(8, 4))
+ax_trust.plot(monthly_trust_revenue.index, monthly_trust_revenue.values, marker='o', color='seagreen')
+ax_trust.set_title("Monthly Trust Revenue (Last 12 Months)")
+ax_trust.set_ylabel("Revenue (£)")
+ax_trust.set_xlabel("Month")
+ax_trust.grid(True, linestyle='--', alpha=0.5)
+plt.xticks(rotation=45)
+st.pyplot(fig_trust)
+
 
 # --------------------------
 # Monthly Sales Trends
