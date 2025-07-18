@@ -67,6 +67,7 @@ def load_data():
 
 sales_df, schools_df = load_data()
 edu_df = sales_df[sales_df['School Match'].str.lower() != "no match"]
+
 # --------------------------
 # KPIs
 # --------------------------
@@ -346,5 +347,3 @@ if school_type_filter != "All":
 st.sidebar.metric("Filtered Sales", f"£{filtered_df['Item Total'].sum():,.2f}")
 csv = filtered_df.to_csv(index=False).encode('utf-8')
 st.sidebar.download_button("⬇️ Download Filtered Data", csv, "filtered_education_sales.csv", "text/csv")
-
-
