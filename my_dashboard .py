@@ -89,6 +89,9 @@ total_schools_by_type = edu_df['Type'].nunique()
 total_trust_matched_sales = edu_df[edu_df['Trust Match'].str.strip().str.lower() == 'trust'].shape[0]
 unique_trust_schools = edu_df[edu_df['Trust Match'].str.strip().str.lower() == 'trust']['School Match'].nunique()
 
+# ✅ New: Number of Sales to Schools
+num_sales_to_schools = edu_df.shape[0]
+
 # First row with 4 columns
 col1, col2, col3, col4 = st.columns(4)
 col1.metric("💰 Total Revenue", f"£{total_revenue:,.2f}")
@@ -96,12 +99,12 @@ col2.metric("🎓 Education Revenue", f"£{edu_revenue:,.2f}")
 col3.metric("📦 Units Sold", f"{int(total_units):,}")
 col4.metric("🏫 Schools Reached", f"{schools_reached}")
 
-# Second row with 4 columns
-col5, col6, col7, col8 = st.columns(4)
-col5.metric("⚖️ Repeat Orders %", f"{repeat_order_rate:.1f}%")
-col6.metric("🏫 Unique School Types", f"{total_schools_by_school_type}")
-col7.metric("🏷️ Unique Types", f"{total_schools_by_type}")
-col8.metric("🤝 Trust-Reach Sales", f"{total_trust_matched_sales}")
+# Second row with 3 columns
+col5, col6, col7 = st.columns(3)
+col5.metric("🛒 Sales to Schools", f"{num_sales_to_schools:,}")
+col6.metric("🏢 Trust-Matched Sales", f"{total_trust_matched_sales}")
+col7.metric("🏘 Unique Trust Schools", f"{unique_trust_schools}")
+
 
 
 # Optionally display unique trust schools count too (you can add as metric or text)
@@ -397,7 +400,7 @@ trust_options = ['All'] + sorted(
 )
 
 trust_filter = st.sidebar.selectbox(
-    "Select Trust Match (Excludes blank entries)", 
+    "Select Trust Match sales", 
     options=trust_options
 )
 
