@@ -142,6 +142,37 @@ st.markdown("""
 This line chart shows the total revenue over time, comparing all sales with those specifically from the education sector.  
 You can see seasonal peaks and overall growth, helping identify periods of higher demand and sales trends.
 """)
+
+# --------------------------
+# Regional Sales Breakdown
+# --------------------------
+st.markdown("### 🌍 Regional Sales Breakdown")
+st.markdown("""
+This bar chart presents total revenue generated from each region (all places listed in the Region column).  
+It highlights lucrative areas and sales distribution.
+""")
+
+# Clean the Region column: strip whitespace only (keep all unique regions)
+sales_df['Region_clean'] = sales_df['Region'].astype(str).str.strip()
+
+# Group revenue by all unique regions including blanks and unusual entries
+region_sales_all = sales_df.groupby('Region_clean')['Item Total'].sum().sort_values(ascending=False)
+
+# Plotting
+fig, ax = plt.subplots(figsize=(12, 6))
+sns.barplot(x=region_sales_all.values, y=region_sales_all.index, palette='viridis', ax=ax)
+
+# Format x-axis as £ currency with commas
+ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f'£{int(x):,}'))
+
+ax.set_xlabel("Revenue (£)")
+ax.set_ylabel("Region")
+ax.set_title("Total Sales Revenue by All Regions (Including All Unique Places)")
+ax.grid(axis='x', linestyle='--', alpha=0.7)
+
+plt.tight_layout()
+st.pyplot(fig)
+
 # --------------------------
 # School Segmentation
 # --------------------------
@@ -189,35 +220,6 @@ with col2:
     This bar chart shows the number of education orders by each region exactly as they appear in the data.  
     """)
 
-# --------------------------
-# Regional Sales Breakdown
-# --------------------------
-st.markdown("### 🌍 Regional Sales Breakdown")
-st.markdown("""
-This bar chart presents total revenue generated from each region (all places listed in the Region column).  
-It highlights lucrative areas and sales distribution.
-""")
-
-# Clean the Region column: strip whitespace only (keep all unique regions)
-sales_df['Region_clean'] = sales_df['Region'].astype(str).str.strip()
-
-# Group revenue by all unique regions including blanks and unusual entries
-region_sales_all = sales_df.groupby('Region_clean')['Item Total'].sum().sort_values(ascending=False)
-
-# Plotting
-fig, ax = plt.subplots(figsize=(12, 6))
-sns.barplot(x=region_sales_all.values, y=region_sales_all.index, palette='viridis', ax=ax)
-
-# Format x-axis as £ currency with commas
-ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f'£{int(x):,}'))
-
-ax.set_xlabel("Revenue (£)")
-ax.set_ylabel("Region")
-ax.set_title("Total Sales Revenue by All Regions (Including All Unique Places)")
-ax.grid(axis='x', linestyle='--', alpha=0.7)
-
-plt.tight_layout()
-st.pyplot(fig)
 
 # --------------------------
 # Top 10 Schools by Revenue
