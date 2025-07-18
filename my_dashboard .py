@@ -101,7 +101,7 @@ col5, col6, col7, col8 = st.columns(4)
 col5.metric("⚖️ Repeat Orders %", f"{repeat_order_rate:.1f}%")
 col6.metric("🏫 Unique School Types", f"{total_schools_by_school_type}")
 col7.metric("🏷️ Unique Types", f"{total_schools_by_type}")
-col8.metric("🤝 Trust Matched Sales", f"{total_trust_matched_sales}")
+col8.metric("🤝 Trust-Reach Sales", f"{total_trust_matched_sales}")
 
 
 # Optionally display unique trust schools count too (you can add as metric or text)
@@ -399,11 +399,14 @@ elif trust_filter != 'All':
     filtered_df = filtered_df[filtered_df['Trust Match'] == trust_filter]
 
 # --- Sidebar Metric Display ---
-st.sidebar.metric("🎯 Filtered Sales", f"£{filtered_df['Item Total'].sum():,.2f}")
+filtered_sales_total = filtered_df['Item Total'].sum()
+filtered_sales_count = len(filtered_df)
 
-# --- Download Button for Filtered Data ---
-csv = filtered_df.to_csv(index=False).encode('utf-8')
-st.sidebar.download_button("📥 Download Filtered Data", csv, "filtered_data.csv", "text/csv")
+st.sidebar.metric("🎯 Filtered Sales Revenue", f"£{filtered_sales_total:,.2f}")
+st.sidebar.metric("🧾 Number of Sales", f"{filtered_sales_count:,}")
+
+
+
 
 
 
