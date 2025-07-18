@@ -358,20 +358,39 @@ with st.expander("📋 View Detailed Trustpilot Ratings"):
 # Filters & Export
 # --------------------------
 st.sidebar.markdown("## 🔍 Filter Options")
-region_filter = st.sidebar.selectbox("Select Region", options=['All'] + sorted(edu_df['Region'].dropna().unique()))
-school_type_filter = st.sidebar.selectbox("Select School Type", options=['All'] + sorted(edu_df['School Type'].dropna().unique()))
 
-filtered_df = edu_df.copy()
+# -- Base copy to avoid modifying original --
+filtered_df = sales_df.copy()
+
+# --- Region Filter ---
+region_filter = st.sidebar.selectbox(
+    "Select Region", 
+    options=['All'] + sorted(filtered_df['Region'].dropna().unique())
+)
 if region_filter != "All":
     filtered_df = filtered_df[filtered_df['Region'] == region_filter]
+
+# --- School Type Filter ---
+school_type_filter = st.sidebar.selectbox(
+    "Select School Type (e.g., Academy, Free School)", 
+    options=['All'] + sorted(filtered_df['School Type'].dropna().unique())
+)
 if school_type_filter != "All":
     filtered_df = filtered_df[filtered_df['School Type'] == school_type_filter]
 
-st.sidebar.metric("Filtered Sales", f"£{filtered_df['Item Total'].sum():,.2f}")
-csv = filtered_df.to_csv(index=False).encode('utf-8')
-
-# Dropdown filter for School Type (e.g., Primary, Secondary)
+# --- 'Type' Filter (e.g., Primary, Secondary) ---
 selected_types = st.sidebar.multiselect(
-    "Select School Type (Primary, Secondary, etc.):",
-    options=sorted(sales_df['Type'].dropna().unique()),
-    default=sorted(sales_df['Type'].dropna().unique())
+    "Select School Category (e.g., Primary, Secondary):",
+    options=sorted(filtered_df['Type'].dropna().unique()),
+    default=sorted(filtered_df['Type'].dropna().unique())
+)
+if selected_types:
+    filtered_df = filtered_df[filtered_df['Type'].isin(selected_types)]
+
+# --- Sidebar Metric Display ---
+st.sidebar.metric("🎯 Filtered Sales", f"£{filtered_df['Item Total'].sum():,.2f}")
+
+# --- Download Filtered CSV ---
+csv = filtered_df.to_csv(index=False).encode('utf-8')
+st.sidebar.download_button("📥 Download Filtered Data", csv, "filtered_data.csv", "text/csv")
+
