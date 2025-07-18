@@ -359,7 +359,7 @@ with st.expander("📋 View Detailed Trustpilot Ratings"):
 # --------------------------
 st.sidebar.markdown("## 🔍 Filter Options")
 
-# Base copy of the dataset
+# Start with the full dataset
 filtered_df = sales_df.copy()
 
 # --- Region Filter ---
@@ -386,11 +386,24 @@ type_filter = st.sidebar.selectbox(
 if type_filter != "All":
     filtered_df = filtered_df[filtered_df['Type'] == type_filter]
 
+# --- Trust Match Filter ---
+trust_options = ['All', 'Blank (No Trust)'] + sorted(filtered_df['Trust Match'].dropna().unique())
+trust_filter = st.sidebar.selectbox(
+    "Select Trust Match",
+    options=trust_options
+)
+
+if trust_filter == 'Blank (No Trust)':
+    filtered_df = filtered_df[filtered_df['Trust Match'].isna() | (filtered_df['Trust Match'].astype(str).str.strip() == '')]
+elif trust_filter != 'All':
+    filtered_df = filtered_df[filtered_df['Trust Match'] == trust_filter]
+
 # --- Sidebar Metric Display ---
 st.sidebar.metric("🎯 Filtered Sales", f"£{filtered_df['Item Total'].sum():,.2f}")
 
-# --- Download Filtered CSV ---
+# --- Download Button for Filtered Data ---
 csv = filtered_df.to_csv(index=False).encode('utf-8')
 st.sidebar.download_button("📥 Download Filtered Data", csv, "filtered_data.csv", "text/csv")
+
 
 
