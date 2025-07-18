@@ -369,4 +369,9 @@ if school_type_filter != "All":
 
 st.sidebar.metric("Filtered Sales", f"£{filtered_df['Item Total'].sum():,.2f}")
 csv = filtered_df.to_csv(index=False).encode('utf-8')
-st.sidebar.download_button("⬇️ Download Filtered Data", csv, "filtered_education_sales.csv", "text/csv")
+
+# Dropdown filter for School Type (e.g., Primary, Secondary)
+selected_types = st.sidebar.multiselect(
+    "Select School Type (Primary, Secondary, etc.):",
+    options=sorted(sales_df['Type'].dropna().unique()),
+    default=sorted(sales_df['Type'].dropna().unique())
