@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import requests
 import io
 import seaborn as sns
+import matplotlib.ticker as ticker
 
 PASSWORD = "2619506@theioutlet"
 
@@ -80,7 +81,6 @@ sales_df, schools_df = load_data()
 
 # Filter out rows where School Match is blank or empty
 edu_df = sales_df[sales_df['School Match'].notna() & (sales_df['School Match'].astype(str).str.strip() != "")]
-
 
 
 
@@ -180,38 +180,30 @@ This reveals geographical hotspots of demand and potential regions for expansion
 # --------------------------
 st.markdown("### 🌍 Regional Sales Breakdown")
 st.markdown("""
-This bar chart presents total revenue generated from each UK region.  
-It highlights lucrative areas and sales distribution, helping focus marketing and sales efforts.
+This bar chart presents total revenue generated from each region (all places listed in the Region column).  
+It highlights lucrative areas and sales distribution.
 """)
 
-# Clean and normalize the 'Region' column
-edu_df['Region'] = edu_df['Region'].astype(str).str.strip().str.title()
+# Clean the Region column: strip whitespace only (keep all unique regions)
+sales_df['Region_clean'] = sales_df['Region'].astype(str).str.strip()
 
-# Filter out invalid or missing regions
-valid_regions_df = edu_df[(edu_df['Region'] != '') & (edu_df['Region'].str.lower() != 'nan')]
+# Group revenue by all unique regions including blanks and unusual entries
+region_sales_all = sales_df.groupby('Region_clean')['Item Total'].sum().sort_values(ascending=False)
 
-# Aggregate revenue by region
-region_sales = valid_regions_df.groupby('Region')['Item Total'].sum().sort_values(ascending=False)
-
-# Plotting with Seaborn for a nicer style
-import matplotlib.ticker as ticker
-
+# Plotting
 fig, ax = plt.subplots(figsize=(12, 6))
-sns.barplot(x=region_sales.values, y=region_sales.index, palette='viridis', ax=ax)
+sns.barplot(x=region_sales_all.values, y=region_sales_all.index, palette='viridis', ax=ax)
 
 # Format x-axis as £ currency with commas
 ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f'£{int(x):,}'))
 
 ax.set_xlabel("Revenue (£)")
 ax.set_ylabel("Region")
-ax.set_title("Total Sales Revenue by Region")
+ax.set_title("Total Sales Revenue by All Regions (Including All Unique Places)")
 ax.grid(axis='x', linestyle='--', alpha=0.7)
 
-# Tight layout for spacing
 plt.tight_layout()
-
 st.pyplot(fig)
-
 
 # --------------------------
 # Top 10 Schools by Revenue
