@@ -386,17 +386,24 @@ type_filter = st.sidebar.selectbox(
 if type_filter != "All":
     filtered_df = filtered_df[filtered_df['Type'] == type_filter]
 
-# --- Trust Match Filter ---
-trust_options = ['All', 'Blank (No Trust)'] + sorted(filtered_df['Trust Match'].dropna().unique())
+# --- Trust Match Filter (excluding blanks) ---
+trust_options = ['All'] + sorted(
+    filtered_df['Trust Match']
+    .dropna()
+    .astype(str)
+    .str.strip()
+    .loc[lambda x: x != '']
+    .unique()
+)
+
 trust_filter = st.sidebar.selectbox(
-    "Select Trust Match",
+    "Select Trust Match (Excludes blank entries)", 
     options=trust_options
 )
 
-if trust_filter == 'Blank (No Trust)':
-    filtered_df = filtered_df[filtered_df['Trust Match'].isna() | (filtered_df['Trust Match'].astype(str).str.strip() == '')]
-elif trust_filter != 'All':
+if trust_filter != 'All':
     filtered_df = filtered_df[filtered_df['Trust Match'] == trust_filter]
+
 
 # --- Sidebar Metric Display ---
 filtered_sales_total = filtered_df['Item Total'].sum()
