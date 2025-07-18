@@ -78,12 +78,24 @@ schools_reached = edu_df['School Match'].nunique()
 repeat_orders = edu_df.groupby('School Match')['Order ID'].nunique()
 repeat_order_rate = (repeat_orders[repeat_orders > 1].count() / schools_reached) * 100
 
-col1, col2, col3, col4, col5 = st.columns(5)
+# New KPI calculations
+total_schools_by_school_type = edu_df['School Type'].nunique()
+total_schools_by_type = edu_df['Type'].nunique()
+total_trust_matched_sales = edu_df[edu_df['Trust Match'].str.strip().str.lower() == 'trust'].shape[0]
+unique_trust_schools = edu_df[edu_df['Trust Match'].str.strip().str.lower() == 'trust']['School Match'].nunique()
+
+col1, col2, col3, col4, col5, col6, col7, col8 = st.columns(8)
 col1.metric("💰 Total Revenue", f"£{total_revenue:,.2f}")
 col2.metric("🎓 Education Revenue", f"£{edu_revenue:,.2f}")
 col3.metric("📦 Units Sold", f"{int(total_units):,}")
 col4.metric("🏫 Schools Reached", f"{schools_reached}")
 col5.metric("⚖️ Repeat Orders %", f"{repeat_order_rate:.1f}%")
+col6.metric("🏫 Unique School Types", f"{total_schools_by_school_type}")
+col7.metric("🏷️ Unique Types", f"{total_schools_by_type}")
+col8.metric("🤝 Trust Matched Sales", f"{total_trust_matched_sales}")
+
+# Optionally display unique trust schools count too (you can add as metric or text)
+st.markdown(f"**Unique Schools with Trust Match:** {unique_trust_schools}")
 
 # --------------------------
 # Monthly Sales Trends
