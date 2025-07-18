@@ -83,8 +83,6 @@ sales_df, schools_df = load_data()
 # Filter out rows where School Match is blank or empty
 edu_df = sales_df[sales_df['School Match'].notna() & (sales_df['School Match'].astype(str).str.strip() != "")]
 
-
-
 # --------------------------
 # KPIs
 # --------------------------
@@ -117,9 +115,6 @@ col5.metric("🛒 Sales to Schools", f"{num_sales_to_schools:,}")
 col6.metric("🏢 Trust-Matched Sales", f"{total_trust_matched_sales}")
 col7.metric("🏘 Unique Trust Schools", f"{unique_trust_schools}")
 
-
-
-# Optionally display unique trust schools count too (you can add as metric or text)
 st.markdown(f"**Unique Schools with Trust Match:** {unique_trust_schools}")
 
 # --------------------------
@@ -147,12 +142,7 @@ You can see seasonal peaks and overall growth, helping identify periods of highe
 # Regional Sales Breakdown
 # --------------------------
 st.markdown("### 🌍 Regional Sales Breakdown")
-st.markdown("""
-This bar chart presents total revenue generated from each region (all places listed in the Region column).  
-It highlights lucrative areas and sales distribution.
-""")
-
-# Clean the Region column: strip whitespace only (keep all unique regions)
+# Clean the Region column: strip whitespace only
 sales_df['Region_clean'] = sales_df['Region'].astype(str).str.strip()
 
 # Group revenue by all unique regions including blanks and unusual entries
@@ -173,6 +163,10 @@ ax.grid(axis='x', linestyle='--', alpha=0.7)
 plt.tight_layout()
 st.pyplot(fig)
 
+st.markdown("""
+This bar chart presents total revenue generated from each region (all places listed in the Region column).  
+It highlights lucrative areas and sales distribution.
+""")
 # --------------------------
 # School Segmentation
 # --------------------------
