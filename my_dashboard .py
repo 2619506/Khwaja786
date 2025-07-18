@@ -61,13 +61,13 @@ def load_data():
     bytes_io = io.BytesIO(response.content)
     sales_df = pd.read_excel(bytes_io, sheet_name="Sales")
     schools_df = pd.read_excel(bytes_io, sheet_name="Schools")
-    trusts_df = pd.read_excel(bytes_io, sheet_name="Trusts")  # <-- Added
+    trusts_df = pd.read_excel(bytes_io, sheet_name="Trusts")  # Added Trusts sheet
+    # Strip all column names of leading/trailing whitespace
     sales_df.columns = sales_df.columns.str.strip()
+    schools_df.columns = schools_df.columns.str.strip()
+    trusts_df.columns = trusts_df.columns.str.strip()
     sales_df['Order Date'] = pd.to_datetime(sales_df['Order Date'], errors='coerce', dayfirst=True)
     return sales_df, schools_df, trusts_df
-
-sales_df, schools_df, trusts_df = load_data()
-edu_df = sales_df[sales_df['School Match'].str.lower() != "no match"]
 
 # --------------------------
 # Trusts and Sales Overview
@@ -78,7 +78,7 @@ st.markdown("### 🔎 Trusts and Sales Overview")
 total_trusts = len(trusts_df)
 
 # Number of purchases by trusts (where 'Trust match' == 'Trust')
-trust_purchases = sales_df[sales_df['Trust match'].str.strip().str.lower() == 'trust']
+trust_purchases = sales_df[sales_df['Trust Match'].astype(str).str.strip().str.lower() == 'trust']
 num_trust_purchases = len(trust_purchases)
 
 # Assuming a buyer column exists in sales_df. Replace 'Buyer Name' if different.
