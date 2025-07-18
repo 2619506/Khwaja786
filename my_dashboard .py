@@ -1,9 +1,10 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 import requests
 import io
-import seaborn as sns
+import matplotlib.ticker as ticker
 
 # --------------------------
 # Responsive CSS for better display on all devices
@@ -15,29 +16,19 @@ st.markdown(
     .dataframe, .stDataFrame div[data-testid="stTable"] > div {
         overflow-x: auto;
     }
-
     /* Responsive font sizes and padding */
     @media only screen and (max-width: 600px) {
-        h1 {
-            font-size: 1.5rem !important;
-        }
-        h2 {
-            font-size: 1.3rem !important;
-        }
-        h3 {
-            font-size: 1.1rem !important;
-        }
-        .css-1v3fvcr {
-            padding-left: 8px !important;
-            padding-right: 8px !important;
-        }
+        h1 { font-size: 1.5rem !important; }
+        h2 { font-size: 1.3rem !important; }
+        h3 { font-size: 1.1rem !important; }
+        .css-1v3fvcr { padding-left: 8px !important; padding-right: 8px !important; }
     }
     </style>
     """, unsafe_allow_html=True
 )
 
 # --------------------------
-# Project Overview
+# Page Setup
 # --------------------------
 st.set_page_config(page_title="iOutlet Education Expansion Dashboard", layout="wide")
 st.title("The iOutlet Strategic Dashboard")
@@ -52,9 +43,9 @@ To develop a data-driven strategy for expanding refurbished tech sales in the ed
 """)
 
 # --------------------------
-# Load and Clean Data from SharePoint (Add Trusts sheet)
+# Load Data Function
 # --------------------------
-@st.cache_data
+@st.cache_data(show_spinner=True)
 def load_data():
     file_url = "https://dmail-my.sharepoint.com/:x:/g/personal/2619506_dundee_ac_uk/ETLrFWlAs81NpHPN3_nhayEBVPVFauwk8jQCcwEt-cuv4Q?download=1"
     response = requests.get(file_url)
@@ -64,42 +55,55 @@ def load_data():
     schools_df = pd.read_excel(bytes_io, sheet_name="Schools")
     trusts_df = pd.read_excel(bytes_io, sheet_name="Trusts")
     
+    # Strip column names
     sales_df.columns = sales_df.columns.str.strip()
     schools_df.columns = schools_df.columns.str.strip()
     trusts_df.columns = trusts_df.columns.str.strip()
     
+    # Parse dates
     sales_df['Order Date'] = pd.to_datetime(sales_df['Order Date'], errors='coerce', dayfirst=True)
-    
-    st.write("Trusts sheet loaded with columns:", trusts_df.columns.tolist())
-    st.write("Trusts sheet row count:", len(trusts_df))
     
     return sales_df, schools_df, trusts_df
 
+# Load all data
+sales_df, schools_df, trusts_df = load_data()
+
+# Debug outputs to confirm loading
+st.write("### Data Load Summary")
+st.write(f"Sales sheet columns: {sales_df.columns.tolist()}")
+st.write(f"Sales rows: {len(sales_df)}")
+st.write(f"Schools sheet columns: {schools_df.columns.tolist()}")
+st.write(f"Schools rows: {len(schools_df)}")
+st.write(f"Trusts sheet columns: {trusts_df.columns.tolist()}")
+st.write(f"Trusts rows: {len(trusts_df)}")
+
+# Filtered education data
+edu_df = sales_df[sales_df['School Match'].str.lower() != "no match"]
+
 # --------------------------
-# Trusts and Sales Overview
+# Trusts and Sales Overview Section
 # --------------------------
 st.markdown("### 🔎 Trusts and Sales Overview")
 
-# Total trusts from Trusts sheet
 total_trusts = len(trusts_df)
 
-# Number of purchases by trusts (where 'Trust match' == 'Trust')
-trust_purchases = sales_df[sales_df['Trust Match'].astype(str).str.strip().str.lower() == 'trust']
+# Filter sales where 'Trust Match' == 'Trust' (case-insensitive)
+trust_purchases = sales_df[
+    sales_df['Trust Match'].astype(str).str.strip().str.lower() == 'trust'
+]
 num_trust_purchases = len(trust_purchases)
 
-# Assuming a buyer column exists in sales_df. Replace 'Buyer Name' if different.
-buyer_col = 'Buyer Name'
-if buyer_col not in sales_df.columns:
-    buyer_col = 'School Match'  # fallback if no explicit buyer name
+# Identify buyer column; fallback to 'School Match' if no 'Buyer Name'
+buyer_col = 'Buyer Name' if 'Buyer Name' in sales_df.columns else 'School Match'
 
 top_buyers = trust_purchases.groupby(buyer_col).size().sort_values(ascending=False).head(10)
 
 colA, colB, colC = st.columns(3)
 colA.metric("🏢 Total Trusts in UK", f"{total_trusts:,}")
 colB.metric("🛒 Purchases by Trusts", f"{num_trust_purchases:,}")
-colC.markdown("#### 🏆 Top 10 Trust Buyers")
-colC.dataframe(top_buyers.rename("Number of Purchases").reset_index(), use_container_width=True)
-
+with colC:
+    st.markdown("#### 🏆 Top 10 Trust Buyers")
+    st.dataframe(top_buyers.rename("Number of Purchases").reset_index(), use_container_width=True)
 
 # --------------------------
 # KPIs
@@ -109,7 +113,7 @@ edu_revenue = edu_df['Item Total'].sum()
 total_units = sales_df['Quantity'].sum()
 schools_reached = edu_df['School Match'].nunique()
 repeat_orders = edu_df.groupby('School Match')['Order ID'].nunique()
-repeat_order_rate = (repeat_orders[repeat_orders > 1].count() / schools_reached) * 100
+repeat_order_rate = (repeat_orders[repeat_orders > 1].count() / schools_reached) * 100 if schools_reached else 0
 
 col1, col2, col3, col4, col5 = st.columns(5)
 col1.metric("💰 Total Revenue", f"£{total_revenue:,.2f}")
@@ -133,109 +137,65 @@ ax1.set_ylabel("£")
 ax1.legend()
 ax1.grid(True)
 st.pyplot(fig1)
-st.markdown("""
-This line chart shows the total revenue over time, comparing all sales with those specifically from the education sector.  
-You can see seasonal peaks and overall growth, helping identify periods of higher demand and sales trends.
-""")
-# --------------------------
-# School Segmentation
-# --------------------------
 
+# --------------------------
+# Orders by School Type and Region
+# --------------------------
 st.markdown("### 🏫 Orders by School Type")
-
 school_types = edu_df["School Type"].dropna().value_counts()
 
-
-
 regions = edu_df["Region"].dropna().value_counts()
+
 colA, colB = st.columns([3, 2])
 with colA:
     fig2, ax2 = plt.subplots(figsize=(8, 4))
     school_types.plot(kind='bar', color='dodgerblue', ax=ax2)
     ax2.set_title("Orders by School Type")
     st.pyplot(fig2)
-    st.markdown("""
-This bar chart displays the number of orders placed by different school types, such as primary, secondary, and special education schools.  
-It helps us understand which school segments are purchasing most frequently and guides targeted sales strategies.
-""")
-
 with colB:
     fig3, ax3 = plt.subplots(figsize=(6, 6))
     regions.plot(kind='pie', autopct='%1.1f%%', ax=ax3, textprops={'fontsize': 8})
-    st.markdown("### 🌍 Orders by Region")
     ax3.set_title("Orders by Region")
     ax3.axis('equal')
     st.pyplot(fig3)
-    st.markdown("""
-The pie chart illustrates the distribution of orders across UK regions.  
-This reveals geographical hotspots of demand and potential regions for expansion efforts.
-""")
-    
+
 # --------------------------
 # Regional Sales Breakdown
 # --------------------------
 st.markdown("### 🌍 Regional Sales Breakdown")
-st.markdown("""
-This bar chart presents total revenue generated from each UK region.  
-It highlights lucrative areas and sales distribution, helping focus marketing and sales efforts.
-""")
 
-# Clean and normalize the 'Region' column
 edu_df['Region'] = edu_df['Region'].astype(str).str.strip().str.title()
-
-# Filter out invalid or missing regions
 valid_regions_df = edu_df[(edu_df['Region'] != '') & (edu_df['Region'].str.lower() != 'nan')]
-
-# Aggregate revenue by region
 region_sales = valid_regions_df.groupby('Region')['Item Total'].sum().sort_values(ascending=False)
-
-# Plotting with Seaborn for a nicer style
-import matplotlib.ticker as ticker
 
 fig, ax = plt.subplots(figsize=(12, 6))
 sns.barplot(x=region_sales.values, y=region_sales.index, palette='viridis', ax=ax)
-
-# Format x-axis as £ currency with commas
 ax.xaxis.set_major_formatter(ticker.FuncFormatter(lambda x, _: f'£{int(x):,}'))
-
 ax.set_xlabel("Revenue (£)")
 ax.set_ylabel("Region")
 ax.set_title("Total Sales Revenue by Region")
 ax.grid(axis='x', linestyle='--', alpha=0.7)
-
-# Tight layout for spacing
 plt.tight_layout()
-
 st.pyplot(fig)
-
 
 # --------------------------
 # Top 10 Schools by Revenue
 # --------------------------
 st.markdown("### 🏆 Top 10 Schools by Revenue")
-st.markdown("""
-The table lists the top ten schools by total revenue from purchases.  
-This helps identify key accounts for relationship building and tailored offers.
-""")
 top_schools = edu_df.groupby('School Match')['Item Total'].sum().sort_values(ascending=False).head(10)
 st.dataframe(top_schools, use_container_width=True)
 
 # --------------------------
-# Product Insights
+# Top Items Sold in Education Sector
 # --------------------------
 st.markdown("### 📦 Top Items Sold in Education Sector")
-st.markdown("""
-This bar chart shows the most popular product types sold to educational customers, measured by units.  
-Understanding product preferences supports inventory and marketing decisions.
-""")
-
 top_items = edu_df.groupby("Item Type")["Quantity"].sum().sort_values(ascending=False)
-
 fig4, ax4 = plt.subplots(figsize=(8, 4))
 top_items.plot(kind='bar', color='seagreen', ax=ax4)
 ax4.set_ylabel("Units")
 ax4.set_title("Top Item Types Sold")
 st.pyplot(fig4)
+
 
 # --------------------------
 # Pain Points Analysis
