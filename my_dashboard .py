@@ -359,7 +359,7 @@ with st.expander("📋 View Detailed Trustpilot Ratings"):
 # --------------------------
 st.sidebar.markdown("## 🔍 Filter Options")
 
-# -- Base copy to avoid modifying original --
+# Base copy of the dataset
 filtered_df = sales_df.copy()
 
 # --- Region Filter ---
@@ -378,14 +378,13 @@ school_type_filter = st.sidebar.selectbox(
 if school_type_filter != "All":
     filtered_df = filtered_df[filtered_df['School Type'] == school_type_filter]
 
-# --- 'Type' Filter (e.g., Primary, Secondary) ---
-selected_types = st.sidebar.selectbox(
-    "Select School Category (e.g., Primary, Secondary):",
-    options=sorted(filtered_df['Type'].dropna().unique()),
-    default=sorted(filtered_df['Type'].dropna().unique())
+# --- Type Filter (Primary, Secondary, etc.) ---
+type_filter = st.sidebar.selectbox(
+    "Select Education Level (Primary / Secondary):",
+    options=['All'] + sorted(filtered_df['Type'].dropna().unique())
 )
-if selected_types:
-    filtered_df = filtered_df[filtered_df['Type'].isin(selected_types)]
+if type_filter != "All":
+    filtered_df = filtered_df[filtered_df['Type'] == type_filter]
 
 # --- Sidebar Metric Display ---
 st.sidebar.metric("🎯 Filtered Sales", f"£{filtered_df['Item Total'].sum():,.2f}")
@@ -393,4 +392,5 @@ st.sidebar.metric("🎯 Filtered Sales", f"£{filtered_df['Item Total'].sum():,.
 # --- Download Filtered CSV ---
 csv = filtered_df.to_csv(index=False).encode('utf-8')
 st.sidebar.download_button("📥 Download Filtered Data", csv, "filtered_data.csv", "text/csv")
+
 
