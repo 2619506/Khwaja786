@@ -51,9 +51,8 @@ st.markdown("""
 To develop a data-driven strategy for expanding refurbished tech sales in the education sector, based on analysis of sales trends, school segments, and regional opportunities.
 """)
 
-
 # --------------------------
-# Load and Clean Data from SharePoint (Add Trusts sheet)
+# Load and Clean Data from SharePoint
 # --------------------------
 @st.cache_data
 def load_data():
@@ -62,41 +61,12 @@ def load_data():
     bytes_io = io.BytesIO(response.content)
     sales_df = pd.read_excel(bytes_io, sheet_name="Sales")
     schools_df = pd.read_excel(bytes_io, sheet_name="Schools")
-    trusts_df = pd.read_excel(bytes_io, sheet_name="Trusts")  # <-- Added
     sales_df.columns = sales_df.columns.str.strip()
     sales_df['Order Date'] = pd.to_datetime(sales_df['Order Date'], errors='coerce', dayfirst=True)
-    return sales_df, schools_df, trusts_df
+    return sales_df, schools_df
 
-sales_df, schools_df, trusts_df = load_data()
+sales_df, schools_df = load_data()
 edu_df = sales_df[sales_df['School Match'].str.lower() != "no match"]
-
-# --------------------------
-# Trusts and Sales Overview
-# --------------------------
-st.markdown("### 🔎 Trusts and Sales Overview")
-
-# Total trusts from Trusts sheet
-total_trusts = len(trusts_df)
-
-# Number of purchases by trusts (where 'Trust Match' == 'Trust')
-trust_purchases = sales_df[sales_df['Trust Match'].astype(str).str.strip().str.lower() == 'trust']
-num_trust_purchases = len(trust_purchases)
-
-# Assuming a buyer column exists in sales_df. Replace 'Buyer Name' if different.
-buyer_col = 'Buyer Name'
-if buyer_col not in sales_df.columns:
-    buyer_col = 'School Match'  # fallback if no explicit buyer name
-
-top_buyers = trust_purchases.groupby(buyer_col).size().sort_values(ascending=False).head(10)
-
-colA, colB, colC = st.columns(3)
-colA.metric("🏢 Total Trusts in UK", f"{total_trusts:,}")
-colB.metric("🛒 Purchases by Trusts", f"{num_trust_purchases:,}")
-colC.markdown("#### 🏆 Top 10 Trust Buyers")
-colC.dataframe(top_buyers.rename("Number of Purchases").reset_index(), use_container_width=True)
-
-
-
 # --------------------------
 # KPIs
 # --------------------------
