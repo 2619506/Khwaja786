@@ -5,6 +5,7 @@ import requests
 import io
 import seaborn as sns
 import matplotlib.ticker as ticker
+import plotly.express as px
 
 PASSWORD = "2619506@theioutlet"
 
@@ -145,36 +146,49 @@ You can see seasonal peaks and overall growth, helping identify periods of highe
 # School Segmentation
 # --------------------------
 
-st.markdown("### 🏫 Orders by School Type")
+st.markdown("### 🏫 Orders by School Type and Region")
 
+# Count education orders by school type
 school_types = edu_df["Type"].dropna().value_counts()
 
+# Count education orders by Region (direct from edu_df)
+orders_by_region = edu_df['Region'].value_counts().reset_index()
+orders_by_region.columns = ['Region', 'Orders']
 
+col1, col2 = st.columns([3, 2])
 
-regions = edu_df["Region"].dropna().value_counts()
-colA, colB = st.columns([3, 2])
-with colA:
-    fig2, ax2 = plt.subplots(figsize=(8, 4))
-    school_types.plot(kind='bar', color='dodgerblue', ax=ax2)
-    ax2.set_title("Orders by School Type")
-    st.pyplot(fig2)
+with col1:
+    fig, ax = plt.subplots(figsize=(8, 4))
+    school_types.plot(kind='bar', color='dodgerblue', ax=ax)
+    ax.set_title("Orders by School Type")
+    ax.set_xlabel("School Type")
+    ax.set_ylabel("Number of Orders")
+    st.pyplot(fig)
     st.markdown("""
-This bar chart displays the number of orders placed by different school types, such as primary, secondary, and special education schools.  
-It helps us understand which school segments are purchasing most frequently and guides targeted sales strategies.
-""")
+    This bar chart shows the number of education orders by school type.  
+    """)
 
-with colB:
-    fig3, ax3 = plt.subplots(figsize=(6, 6))
-    regions.plot(kind='pie', autopct='%1.1f%%', ax=ax3, textprops={'fontsize': 8})
-    st.markdown("### 🌍 Orders by Region")
-    ax3.set_title("Orders by Region")
-    ax3.axis('equal')
-    st.pyplot(fig3)
+with col2:
+    st.markdown("### 🌍 Education Orders by Region")
+
+    fig2 = px.bar(
+        orders_by_region,
+        x='Orders',
+        y='Region',
+        orientation='h',
+        color='Orders',
+        color_continuous_scale='Viridis',
+        title='Education Orders by Region'
+    )
+    fig2.update_layout(
+        yaxis={'categoryorder': 'total ascending'},
+        margin=dict(l=0, r=0, t=40, b=20)
+    )
+    st.plotly_chart(fig2, use_container_width=True)
     st.markdown("""
-The pie chart illustrates the distribution of orders across UK regions.  
-This reveals geographical hotspots of demand and potential regions for expansion efforts.
-""")
-    
+    This bar chart shows the number of education orders by each region exactly as they appear in the data.  
+    """)
+
 # --------------------------
 # Regional Sales Breakdown
 # --------------------------
