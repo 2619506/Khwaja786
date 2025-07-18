@@ -51,22 +51,6 @@ st.markdown("""
 To develop a data-driven strategy for expanding refurbished tech sales in the education sector, based on analysis of sales trends, school segments, and regional opportunities.
 """)
 
-# --------------------------
-# Load and Clean Data from SharePoint
-# --------------------------
-@st.cache_data
-def load_data():
-    file_url = "https://dmail-my.sharepoint.com/:x:/g/personal/2619506_dundee_ac_uk/ETLrFWlAs81NpHPN3_nhayEBVPVFauwk8jQCcwEt-cuv4Q?download=1"
-    response = requests.get(file_url)
-    bytes_io = io.BytesIO(response.content)
-    sales_df = pd.read_excel(bytes_io, sheet_name="Sales")
-    schools_df = pd.read_excel(bytes_io, sheet_name="Schools")
-    sales_df.columns = sales_df.columns.str.strip()
-    sales_df['Order Date'] = pd.to_datetime(sales_df['Order Date'], errors='coerce', dayfirst=True)
-    return sales_df, schools_df
-
-sales_df, schools_df = load_data()
-edu_df = sales_df[sales_df['School Match'].str.lower() != "no match"]
 
 # --------------------------
 # Load and Clean Data from SharePoint (Add Trusts sheet)
