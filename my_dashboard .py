@@ -84,15 +84,20 @@ total_schools_by_type = edu_df['Type'].nunique()
 total_trust_matched_sales = edu_df[edu_df['Trust Match'].str.strip().str.lower() == 'trust'].shape[0]
 unique_trust_schools = edu_df[edu_df['Trust Match'].str.strip().str.lower() == 'trust']['School Match'].nunique()
 
-col1, col2, col3, col4, col5, col6, col7, col8 = st.columns(8)
+# First row with 4 columns
+col1, col2, col3, col4 = st.columns(4)
 col1.metric("💰 Total Revenue", f"£{total_revenue:,.2f}")
 col2.metric("🎓 Education Revenue", f"£{edu_revenue:,.2f}")
 col3.metric("📦 Units Sold", f"{int(total_units):,}")
 col4.metric("🏫 Schools Reached", f"{schools_reached}")
+
+# Second row with 4 columns
+col5, col6, col7, col8 = st.columns(4)
 col5.metric("⚖️ Repeat Orders %", f"{repeat_order_rate:.1f}%")
 col6.metric("🏫 Unique School Types", f"{total_schools_by_school_type}")
 col7.metric("🏷️ Unique Types", f"{total_schools_by_type}")
 col8.metric("🤝 Trust Matched Sales", f"{total_trust_matched_sales}")
+
 
 # Optionally display unique trust schools count too (you can add as metric or text)
 st.markdown(f"**Unique Schools with Trust Match:** {unique_trust_schools}")
@@ -112,6 +117,7 @@ ax1.set_ylabel("£")
 ax1.legend()
 ax1.grid(True)
 st.pyplot(fig1)
+
 st.markdown("""
 This line chart shows the total revenue over time, comparing all sales with those specifically from the education sector.  
 You can see seasonal peaks and overall growth, helping identify periods of higher demand and sales trends.
