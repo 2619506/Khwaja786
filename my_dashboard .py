@@ -50,6 +50,62 @@ st.markdown("""
 **Project Goal:**  
 To develop a data-driven strategy for expanding refurbished tech sales in the education sector, based on analysis of sales trends, school segments, and regional opportunities.
 """)
+# --------------------------
+# Trustpilot Ratings vs Competitors
+# --------------------------
+st.markdown("## 🌟 Trustpilot Reputation Comparison")
+st.markdown("""
+This chart shows how The iOutlet's Trustpilot rating compares to key competitors in the refurbished tech market.
+It reflects customer satisfaction based on TrustScore (0–5 scale) and helps assess brand reputation.
+""")
+
+# Manually collected Trustpilot data
+trustpilot_data = {
+    "Competitor": [
+        "The iOutlet", "musicMagpie", "The Big Phone Store", "Envirofone",
+        "Mazuma Mobile", "UR", "WeBuyAnyPhone", "PhoneBox",
+        "4Gadgets", "Reboxed", "Smart Cellular", "Gadcet"
+    ],
+    "Trustpilot Score": [4.7, 4.4, 4.8, 4.2, 4.3, 4.6, 4.1, 3.9, 4.4, 4.5, 3.7, 4.0],
+    "Review Count": [6000, 322000, 7200, 11000, 16000, 7800, 1400, 800, 2400, 1200, 300, 400],
+    "URL": [
+        "https://uk.trustpilot.com/review/theioutlet.com",
+        "https://uk.trustpilot.com/review/www.musicmagpie.co.uk",
+        "https://uk.trustpilot.com/review/www.thebigphonestore.co.uk",
+        "https://uk.trustpilot.com/review/www.envirofone.com",
+        "https://uk.trustpilot.com/review/www.mazumamobile.com",
+        "https://uk.trustpilot.com/review/ur.co.uk",
+        "https://uk.trustpilot.com/review/webuyanyphone.com",
+        "https://uk.trustpilot.com/review/phonebox.co.uk",
+        "https://uk.trustpilot.com/review/www.4gadgets.co.uk",
+        "https://uk.trustpilot.com/review/reboxed.co",
+        "https://uk.trustpilot.com/review/smartcellular.co.uk",
+        "https://uk.trustpilot.com/review/gadcet.com"
+    ]
+}
+
+trust_df = pd.DataFrame(trustpilot_data).sort_values(by="Trustpilot Score", ascending=False)
+
+# Plot the scores
+fig_trust, ax_trust = plt.subplots(figsize=(10, 6))
+sns.barplot(
+    x="Trustpilot Score", 
+    y="Competitor", 
+    data=trust_df, 
+    hue="Competitor", 
+    palette="coolwarm", 
+    ax=ax_trust, 
+    legend=False
+)
+ax_trust.set_xlim(0, 5)
+ax_trust.set_xlabel("TrustScore (out of 5)")
+ax_trust.set_title("Trustpilot Ratings of Refurbished Tech Competitors")
+ax_trust.grid(axis='x', linestyle='--', alpha=0.6)
+st.pyplot(fig_trust)
+
+# Optional Table
+with st.expander("📋 View Detailed Trustpilot Ratings"):
+    st.dataframe(trust_df[['Competitor', 'Trustpilot Score', 'Review Count', 'URL']], use_container_width=True)
 
 # --------------------------
 # Load and Clean Data from SharePoint
