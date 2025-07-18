@@ -94,8 +94,8 @@ st.markdown("### 🔎 Trusts and Sales Overview")
 # Total trusts from Trusts sheet
 total_trusts = len(trusts_df)
 
-# Number of purchases by trusts (where 'Trust match' == 'Trust')
-trust_purchases = sales_df[sales_df['Trust match'].str.strip().str.lower() == 'trust']
+# Number of purchases by trusts (where 'Trust Match' == 'Trust')
+trust_purchases = sales_df[sales_df['Trust Match'].astype(str).str.strip().str.lower() == 'trust']
 num_trust_purchases = len(trust_purchases)
 
 # Assuming a buyer column exists in sales_df. Replace 'Buyer Name' if different.
@@ -110,6 +110,7 @@ colA.metric("🏢 Total Trusts in UK", f"{total_trusts:,}")
 colB.metric("🛒 Purchases by Trusts", f"{num_trust_purchases:,}")
 colC.markdown("#### 🏆 Top 10 Trust Buyers")
 colC.dataframe(top_buyers.rename("Number of Purchases").reset_index(), use_container_width=True)
+
 
 
 # --------------------------
