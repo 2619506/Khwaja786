@@ -68,7 +68,8 @@ def load_data():
 sales_df, schools_df = load_data()
 
 # Filter out rows where School Match is blank or empty
-edu_df = sales_df[sales_df['School Match'].astype(str).str.strip() != '']
+edu_df = sales_df[sales_df['School Match'].notna() & (sales_df['School Match'].astype(str).str.strip() != "")]
+
 
 
 
