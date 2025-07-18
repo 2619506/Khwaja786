@@ -5,6 +5,17 @@ import requests
 import io
 import seaborn as sns
 
+PASSWORD = "2619506@theioutlet"
+
+# Ask for password input
+st.title("🔒 Protected Dashboard")
+password = st.text_input("Enter password:", type="password")
+
+if password != PASSWORD:
+    st.warning("🚫 Incorrect password. Please try again.")
+    st.stop()  # Stop running any further code if wrong password
+else:
+    st.success("✅ Access granted!")
 # --------------------------
 # Responsive CSS for better display on all devices
 # --------------------------
@@ -39,7 +50,7 @@ st.markdown(
 # --------------------------
 # Project Overview
 # --------------------------
-st.set_page_config(page_title="iOutlet Education Expansion Dashboard", layout="wide")
+st.set_page_config(page_title="The iOutlet Education Expansion Dashboard", layout="wide")
 st.title("The iOutlet Strategic Dashboard")
 st.markdown("""
 **Project Title:** *Maximising Impact: The iOutlet's Strategic Expansion in Education*
