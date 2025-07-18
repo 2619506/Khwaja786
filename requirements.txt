@@ -5,3 +5,4 @@ openpyxl
 requests
 geopandas
 seaborn
+plotly
