@@ -379,7 +379,7 @@ if school_type_filter != "All":
     filtered_df = filtered_df[filtered_df['School Type'] == school_type_filter]
 
 # --- 'Type' Filter (e.g., Primary, Secondary) ---
-selected_types = st.sidebar.multiselect(
+selected_types = st.sidebar.selectbox(
     "Select School Category (e.g., Primary, Secondary):",
     options=sorted(filtered_df['Type'].dropna().unique()),
     default=sorted(filtered_df['Type'].dropna().unique())
