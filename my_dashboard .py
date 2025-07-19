@@ -7,7 +7,7 @@ import seaborn as sns
 import matplotlib.ticker as ticker
 import plotly.express as px
 
-PASSWORD = "2619506@theioutlet"
+PASSWORD = "theioutlet@1"
 
 # Ask for password input
 st.title("🔒 Protected Dashboard")
