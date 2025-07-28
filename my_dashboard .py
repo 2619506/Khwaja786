@@ -247,13 +247,13 @@ st.pyplot(fig4)
 # Pain Points Analysis
 # --------------------------
 pain_points = {
-    'Limited Financial Resources': 9,
-    'Procurement Seasonality': 7,
-    'Technology Access Gaps': 6,
-    'Environmental Compliance': 8,
-    'Inadequate IT Support Capacity': 6,
-    'Complex Procurement Processes': 7,
-    'Diverse Institutional Needs': 8
+    "Limited Financial Resources": 9,
+    "Environmental Compliance": 8,
+    "Diverse Institutional Needs": 8,
+    "Procurement Seasonality": 7,
+    "Complex Procurement Processes": 7,
+    "Technology Access Gaps": 6,
+    "Inadequate IT Support Capacity": 6
 }
 
 df_pain = pd.DataFrame(list(pain_points.items()), columns=['Pain Point', 'Impact Score'])
@@ -281,12 +281,12 @@ st.markdown("The table below aligns each pain point with a tailored strategy fro
 
 pain_solution_data = [
     {"Pain Point": "Limited Financial Resources", "Proposed iOutlet Solution": "Offer cost-effective refurbished devices, bulk education discounts, and financing options."},
-    {"Pain Point": "Procurement Seasonality", "Proposed iOutlet Solution": "Plan inventory cycles around academic year peaks and offer pre-order bundles."},
-    {"Pain Point": "Technology Access Gaps", "Proposed iOutlet Solution": "Supply large-volume, affordable tablet/laptop bundles to close access gaps in low-income schools."},
     {"Pain Point": "Environmental Compliance", "Proposed iOutlet Solution": "Highlight sustainability credentials, carbon offsetting, and e-waste reduction certifications."},
-    {"Pain Point": "Inadequate IT Support Capacity", "Proposed iOutlet Solution": "Provide optional setup support, remote diagnostics, and educational IT care packages."},
+    {"Pain Point": "Diverse Institutional Needs", "Proposed iOutlet Solution": "Customise offerings by institution type (e.g. MATs, SEN schools) through flexible product and service bundles."},
+    {"Pain Point": "Procurement Seasonality", "Proposed iOutlet Solution": "Plan inventory cycles around academic year peaks and offer pre-order bundles."},
     {"Pain Point": "Complex Procurement Processes", "Proposed iOutlet Solution": "Simplify ordering with dedicated account managers and pre-approved tender documentation."},
-    {"Pain Point": "Diverse Institutional Needs", "Proposed iOutlet Solution": "Customise offerings by institution type (e.g. MATs, SEN schools) through flexible product and service bundles."}
+    {"Pain Point": "Technology Access Gaps", "Proposed iOutlet Solution": "Supply large-volume, affordable tablet/laptop bundles to close access gaps in low-income schools."},
+    {"Pain Point": "Inadequate IT Support Capacity", "Proposed iOutlet Solution": "Provide optional setup support, remote diagnostics, and educational IT care packages."}
 ]
 
 solution_df = pd.DataFrame(pain_solution_data)
@@ -301,14 +301,36 @@ This section outlines evidence-based strategic actions designed to align with sc
 """)
 
 recommendations = [
-    {"Action": "1. Offer Education-Specific Device Packages", "Details": "- Bundle iPads or MacBooks with cases, charging carts, and pre-installed software.\n- Enhances usability and aligns with school tech needs."},
-    {"Action": "2. Provide Financial Flexibility Through Leasing and Trade-In Programs", "Details": "- Introduce leasing, trade-in and subscription plans to support affordability and device refresh."},
-    {"Action": "3. Champion Environmental Sustainability in B2B Outreach", "Details": "- Highlight carbon reductions, certified refurbishing, and tree planting schemes."},
-    {"Action": "4. Launch a Tailored Procurement Platform for Schools", "Details": "- Create a dedicated interface with quotes, framework tools, and education-specific pricing."},
-    {"Action": "5. Introduce Technical Support and Training Services", "Details": "- Offer onboarding, remote IT help, and training with education bulk orders."},
-    {"Action": "6. Pursue Consortia and Framework Inclusion", "Details": "- Join Crown Commercial Services and MAT-level procurement groups."},
-    {"Action": "7. Utilise Analytical Dashboards to Guide Sales Strategy", "Details": "- Apply dashboard insights to segment school types and regional demand."}
+    {
+        "Action": "1. Build Education-Focused Device Bundles",
+        "Details": "- Create multi-tiered bundles including refurbished devices, software, warranties, and setup support.\n- Position as full-service, deployment-ready solutions."
+    },
+    {
+        "Action": "2. Join Key Public Procurement Frameworks",
+        "Details": "- Apply to CCS, YPO, and ESPO to gain access to school procurement channels.\n- Highlight framework membership in all sales and marketing touchpoints."
+    },
+    {
+        "Action": "3. Push Clear and Credible Sustainability Messaging",
+        "Details": "- Provide schools with impact reports on carbon savings and e-waste reduction.\n- Back claims with third-party audits and include ESG metrics in proposals."
+    },
+    {
+        "Action": "4. Run Seasonal Marketing Campaigns Aligned with School Calendars",
+        "Details": "- Target budgeting (March) and procurement (July–August) cycles.\n- Use segmented CRM campaigns and urgency messaging to drive conversions."
+    },
+    {
+        "Action": "5. Target Multi-Academy Trusts (MATs) Strategically",
+        "Details": "- Prioritise MATs with centralised purchasing and larger budgets.\n- Assign account managers and tailor messaging around total cost of ownership."
+    },
+    {
+        "Action": "6. Build Strategic Partnerships with ICT and EdTech Providers",
+        "Details": "- Collaborate on bundled offerings with training, software, or IT support services.\n- Coordinate on joint campaigns and clearly define partner roles."
+    },
+    {
+        "Action": "7. Track KPIs to Measure Impact and Guide Strategy",
+        "Details": "- Use KPIs from each recommendation area to assess progress.\n- Adjust strategy based on real sales data, feedback, and market response."
+    }
 ]
+
 
 for rec in recommendations:
     with st.expander(rec["Action"]):
