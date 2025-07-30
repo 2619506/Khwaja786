@@ -337,43 +337,40 @@ for rec in recommendations:
         st.markdown(rec["Details"])
 # Trustpilot Ratings vs Competitors
 # --------------------------
+
 st.markdown("## 🌟 Trustpilot Reputation Comparison")
 st.markdown("""
-Trustpilot scores highlight how refurbished tech providers perform on customer satisfaction.  
-The iOutlet ranks competitively with a 4.7 TrustScore, closely behind The Big Phone Store (4.8) and above many key rivals.  
-This positions the brand as a trusted choice in a crowded market.
+This chart compares The iOutlet’s Trustpilot score with leading refurbished tech competitors.  
+The iOutlet performs strongly with a 4.7 TrustScore, ranking among the top in the sector.
 """)
 
-# Manually collected Trustpilot data
-trustpilot_data = {
-    "Competitor": [
-        "The Big Phone Store", "The iOutlet", "UR", "Reboxed", 
-        "4Gadgets", "musicMagpie", "Mazuma Mobile", "Envirofone",
-        "WeBuyAnyPhone", "Gadcet", "PhoneBox", "Smart Cellular"
-    ],
-    "Trustpilot Score": [4.8, 4.7, 4.6, 4.5, 4.4, 4.4, 4.3, 4.2, 4.1, 4.0, 3.9, 3.7],
-    "Review Count": [7200, 6000, 7800, 1200, 2400, 322000, 16000, 11000, 1400, 400, 800, 300],
-}
+# Data for Trustpilot scores
+companies = [
+    "The Big Phone Store", "The iOutlet", "UR", "Reboxed", "4Gadgets",
+    "musicMagpie", "Mazuma Mobile", "Envirofone", "WeBuyAnyPhone", 
+    "Gadcet", "PhoneBox", "Smart Cellular"
+]
+scores = [4.8, 4.7, 4.6, 4.5, 4.4, 4.4, 4.3, 4.2, 4.1, 4.0, 3.9, 3.7]
+reviews = [7200, 6000, 7800, 1200, 2400, 322000, 16000, 11000, 1400, 400, 800, 300]
 
-trust_df = pd.DataFrame(trustpilot_data).sort_values(by="Trustpilot Score", ascending=False)
+# Create bar chart
+fig, ax = plt.subplots(figsize=(10,6))
+bars = ax.barh(companies, scores, color="steelblue")
+ax.set_xlabel("TrustScore (0–5 scale)")
+ax.set_title("Trustpilot Reputation Comparison: Refurbished Tech Competitors")
 
-# Plot the scores
-fig_trust, ax_trust = plt.subplots(figsize=(10, 6))
-sns.barplot(
-    x="Trustpilot Score", 
-    y="Competitor", 
-    data=trust_df, 
-    hue="Competitor", 
-    palette="coolwarm", 
-    ax=ax_trust, 
-    dodge=False, 
-    legend=False
-)
-ax_trust.set_xlim(0, 5)
-ax_trust.set_xlabel("TrustScore (out of 5)")
-ax_trust.set_title("Trustpilot Ratings of Refurbished Tech Competitors")
-ax_trust.grid(axis='x', linestyle='--', alpha=0.6)
-st.pyplot(fig_trust)
+# Add labels on the bars
+for bar, score, review in zip(bars, scores, reviews):
+    ax.text(bar.get_width() + 0.02, bar.get_y() + bar.get_height()/2, 
+            f"{score} ({review:,} reviews)", va='center')
+
+ax.invert_yaxis()  # Highest score at top
+ax.set_xlim(3.5, 5.0)
+plt.tight_layout()
+
+# Display in Streamlit
+st.pyplot(fig)
+
 
     
 # --------------------------
